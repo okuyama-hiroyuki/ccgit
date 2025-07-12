@@ -13,5 +13,5 @@ func main() {
         fmt.Printf("エラー: %v\n", err)
         return
     }
-    fmt.Printf("%s", output)
+    fmt.Printf(string(output))
 }
