@@ -28,6 +28,8 @@ ${diff}
 ${commitMessageStyle}
 
 [output format]
+desctiption about the changes in the last revision.
+\`\`\`json
 [
   {
     "commit_message": "A brief summary of the changes made in this revision.",
@@ -39,11 +41,9 @@ ${commitMessageStyle}
   },
   ...
 ]
+\`\`\`
 
 [notice]
-+ outputはjsonとして読み込めるものを出力してください。
-+ 出力は必ず配列で、各要素はオブジェクトである必要があります。
-+ 出力はcode blockで囲まないでください。
 + あなたはgitを実行する権限はないので自身でgitを実行しないでください。
 `
 
@@ -53,7 +53,13 @@ type Revision = {
 }
 
 const rawString = execSync(`claude ${quote([prompt])} -p`).toString().trim();
-const revisions: Revision[] = JSON.parse(rawString);
+
+const match = rawString.match(/```json([\s\S]*?)```/);
+if (!match) {
+  throw new Error("No JSON block found in the response.");
+}
+const targetString = match[1].trim();
+const revisions: Revision[] = JSON.parse(targetString);
 
 console.log("Revisions to be created:");
 for (const revision of revisions) {
