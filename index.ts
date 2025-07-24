@@ -64,4 +64,4 @@ for (const revision of revisions) {
   execSync(`jj split -r @- -m "${revision.commit_message}" ${revision.files.join(' ')}`);
 }
 
-execSync("jj abandon @-");
+const _ = execSync("jj abandon @-");
