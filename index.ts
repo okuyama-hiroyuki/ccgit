@@ -1,7 +1,7 @@
 #!/usr/bin / env node
 
-import { execSync } from 'child_process';
-import { exit } from 'process';
+import { execSync } from 'node:child_process';
+import { exit } from 'node:process';
 import { quote } from 'shell-quote';
 import { readFile } from 'node:fs/promises';
 
