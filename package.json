@@ -2,17 +2,18 @@
   "name": "ccgit",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
     "test": "tsc && node dist/index.js",
-    "tsc": "tsc"
+    "build": "tsc",
+    "prePublishOnly": "npm run build"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/okuyama-hiroyuki/ccgit.git"
   },
   "keywords": [],
-  "author": "",
+  "author": "Okuyama Hiroyuki",
   "license": "ISC",
   "type": "module",
   "bugs": {
@@ -27,5 +28,8 @@
   },
   "dependencies": {
     "shell-quote": "^1.8.3"
+  },
+  "bin": {
+    "ccgit": "dist/index.js"
   }
 }
