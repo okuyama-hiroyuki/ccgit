@@ -1,2 +1,0 @@
-# ccgit
-gitコマンドのclaude codeラッパ－です
