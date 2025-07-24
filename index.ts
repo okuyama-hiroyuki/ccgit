@@ -1,3 +1,4 @@
-const message: string = 'Hello, TypeScript!';
+import { execSync } from 'child_process';
 
-console.log(message);
+const nodeVersion = execSync('node -v');
+console.log(`Node.jsのバージョン: ${nodeVersion.toString().trim()}`);
