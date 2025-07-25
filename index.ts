@@ -56,10 +56,6 @@ type Revision = {
 	files: string[];
 };
 
-// const rawString = execSync(`echo ${quote([prompt])} | claude -p`)
-// 	.toString()
-// 	.trim();
-
 const result = spawnSync("claude", ["-p"], {
 	shell: true,
 	input: prompt,
@@ -82,7 +78,10 @@ const targetString = match[1].trim();
 const revisions: Revision[] = JSON.parse(targetString);
 
 for (const revision of revisions) {
-	console.log(`${revision.commit_message}: ${revision.files.join(", ")}`);
+	console.log(`${revision.commit_message}`);
+	for (const file of revision.files) {
+		console.log(`- ${file}`);
+	}
 }
 
 for (const revision of revisions) {
