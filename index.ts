@@ -33,28 +33,27 @@ ${commitMessageStyle}
 [output format]
 desctiption about the changes in the last revision.
 \`\`\`json
-[
-  {
-    "commit_message": "A brief summary of the changes made in this revision.",
-    "files": ["file1.txt", "file2.txt"],
-  },
-  {
-    "commit_message": "A brief summary of the changes made in this revision.",
-    "files": ["file3.txt", "file4.txt"],
-  },
-  ...
-]
+{
+  "revision_descriptions": [
+		"revision description 1",
+		"revision description 2",
+		...
+	]
+	{
+		"files": {
+			"file1.txt": 0,
+			"file2.txt": 0,
+			"file3.txt": 1,
+			"file4.txt": 1,
+			...
+		}
+	}
+}
 \`\`\`
 
 [notice]
 + あなたはgitを実行する権限はないので自身でgitを実行しないでください。
-+ 1つのファイルに対して複数のcommit_messageを設定しないでください。
 `;
-
-type Revision = {
-	commit_message: string;
-	files: string[];
-};
 
 const result = spawnSync("claude", ["-p"], {
 	shell: true,
@@ -74,8 +73,39 @@ if (!match) {
 	console.log("rawString:", rawString);
 	exit(1);
 }
+
+type Revision = {
+	commit_message: string;
+	files: string[];
+};
+
+type Output = {
+	revision_descriptions: string[];
+	files: Record<string, number>;
+};
+
 const targetString = match[1].trim();
-const revisions: Revision[] = JSON.parse(targetString);
+const typed_output: Output = JSON.parse(targetString);
+
+const revisions: Revision[] = [];
+for (const [
+	index,
+	description,
+] of typed_output.revision_descriptions.entries()) {
+	const files = Object.entries(typed_output.files)
+		.filter(([, value]) => value === index)
+		.map(([key]) => key);
+
+	if (files.length === 0) {
+		console.error(`No files found for revision ${index + 1}`);
+		exit(1);
+	}
+
+	revisions.push({
+		commit_message: description,
+		files,
+	});
+}
 
 for (const revision of revisions) {
 	console.log(`${revision.commit_message}`);
