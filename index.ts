@@ -45,6 +45,7 @@ desctiption about the changes in the last revision.
 
 [notice]
 + あなたはgitを実行する権限はないので自身でgitを実行しないでください。
++ 1つのファイルに対して複数のcommit_messageを設定しないでください。
 `;
 
 type Revision = {
