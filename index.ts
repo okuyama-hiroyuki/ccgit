@@ -14,7 +14,10 @@ if (!isEmpty) {
 }
 
 const diff = execSync("jj show @-").toString().trim();
-const commitMessageStyle = readFileSync("./docs/commit_message_style.md", "utf8");
+const commitMessageStyle = readFileSync(
+	"./docs/commit_message_style.md",
+	"utf8",
+);
 
 const prompt = `
 [what to do]
@@ -57,13 +60,10 @@ type Revision = {
 // 	.toString()
 // 	.trim();
 
-const result = spawnSync(
-	"claude",
-	["-p"],
-	{
-		shell: true,
-		input: prompt,
-	});
+const result = spawnSync("claude", ["-p"], {
+	shell: true,
+	input: prompt,
+});
 
 if (result.error) {
 	console.error("Error executing claude:", result.error);
@@ -90,11 +90,11 @@ for (const revision of revisions) {
 	execSync(
 		`jj split -r @- -m "${revision.commit_message}" ${revision.files.join(" ")}`,
 		{
-			stdio: "ignore"
-		}
+			stdio: "ignore",
+		},
 	);
 }
 
 execSync("jj abandon @-", {
-	stdio: "ignore"
+	stdio: "ignore",
 });
