@@ -2,8 +2,9 @@
 
 import { execSync, spawnSync } from "node:child_process";
 import { exit } from "node:process";
-import { quote } from "shell-quote";
 import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+import { dirname, join } from "node:path";
 
 const description = execSync("jj log -r @- -T description").toString().trim();
 const isEmpty = ["@\n│\n~", "○\n│\n~"].includes(description);
@@ -12,12 +13,18 @@ if (!isEmpty) {
 	console.log("recent division's description is not empty");
 	exit(0);
 }
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+// 目的のファイルへの絶対パスを生成
+const commitMessageStylePath = join(
+	__dirname,
+	"docs",
+	"commit_message_style.md",
+);
 
 const diff = execSync("jj show @-").toString().trim();
-const commitMessageStyle = readFileSync(
-	"./docs/commit_message_style.md",
-	"utf8",
-);
+const commitMessageStyle = readFileSync(commitMessageStylePath, "utf8");
 
 const prompt = `
 [what to do]
