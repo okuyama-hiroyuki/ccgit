@@ -81,7 +81,6 @@ if (!match) {
 const targetString = match[1].trim();
 const revisions: Revision[] = JSON.parse(targetString);
 
-console.log("Revisions to be created:");
 for (const revision of revisions) {
 	console.log(`${revision.commit_message}: ${revision.files.join(", ")}`);
 }
