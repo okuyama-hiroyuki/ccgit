@@ -89,7 +89,12 @@ for (const revision of revisions) {
 for (const revision of revisions) {
 	execSync(
 		`jj split -r @- -m "${revision.commit_message}" ${revision.files.join(" ")}`,
+		{
+			stdio: "ignore"
+		}
 	);
 }
 
-execSync("jj abandon @-");
+execSync("jj abandon @-", {
+	stdio: "ignore"
+});
