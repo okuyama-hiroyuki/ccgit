@@ -17,7 +17,7 @@ const targetFiles = execSync("jj show --no-patch -r @- -T 'diff.files().map(|c| 
 const prompt = createPrompt(diff, targetFiles);
 
 const result = spawnSync("claude", ["-p"], {
-  shell: true,
+  // shell: true,
   input: prompt,
 });
 
