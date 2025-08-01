@@ -26,16 +26,14 @@ ${commitMessageStyle}
 desctiption about the changes in the last revision.
 \`\`\`json
 {
-  "revision_descriptions": [
-		"revision description 1",
-		"revision description 2",
+  "revisions_descriptions": [
+		"revision 0's description",
+		"revision 1's description",
 		...
-	]
-	{
-		"files": {
-      ${files.map((file) => `"${file}": <revision index>`).join(",\n")}
-			...
-		}
+	],
+	"files": {
+    ${files.map((file) => `"${file}": <revision index>`).join(",\n")}
+		...
 	}
 }
 \`\`\`

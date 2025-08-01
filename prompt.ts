@@ -41,12 +41,10 @@ desctiption about the changes in the last revision.
 		"revision 0's description",
 		"revision 1's description",
 		...
-	]
-	{
-		"files": {
-      ${files.map((file) => `"${file}": <revision index>`).join(",\n")}
-			...
-		}
+	],
+	"files": {
+    ${files.map((file) => `"${file}": <revision index>`).join(",\n")}
+		...
 	}
 }
 \`\`\`

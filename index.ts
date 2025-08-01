@@ -14,7 +14,6 @@ if (!isEmpty) {
 
 const diff = execSync("jj show @-").toString().trim();
 const targetFiles = execSync("jj show --no-patch -r @- -T 'diff.files().map(|c| c.path())'").toString().trim().split(" ");
-console.log("targetFiles:", targetFiles);
 const prompt = createPrompt(diff, targetFiles);
 
 const result = spawnSync("claude", ["-p"], {
@@ -27,7 +26,6 @@ if (result.error) {
   exit(1);
 }
 const rawString = result.stdout.toString().trim();
-console.log("rawString:", rawString);
 
 const match = rawString.match(/```json([\s\S]*?)```/);
 if (!match) {
@@ -43,7 +41,7 @@ type Revision = {
 };
 
 type Output = {
-  revision_descriptions: string[];
+  revisions_descriptions: string[];
   files: Record<string, number>;
 };
 
@@ -54,7 +52,7 @@ const revisions: Revision[] = [];
 for (const [
   index,
   description,
-] of typed_output.revision_descriptions.entries()) {
+] of typed_output.revisions_descriptions.entries()) {
   const files = Object.entries(typed_output.files)
     .filter(([, value]) => value === index)
     .map(([key]) => key);
