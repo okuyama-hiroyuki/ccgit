@@ -4,6 +4,40 @@ import { execSync, spawnSync } from "node:child_process";
 import { exit } from "node:process";
 import { createPrompt } from "./prompt.js";
 
+const getTargetFiles = (): string[] => {
+  const sumamry = execSync("jj show --no-patch -r @- -T 'diff.summary()'");
+  const lines = sumamry.toString().trim().split("\n");
+
+  const targetFiles: Set<string> = new Set();
+  for (const line of lines) {
+    const type = line[0] as "M" | "A" | "D" | "R" | "C";
+    const file = line.slice(2).trim();
+
+    switch (type) {
+      case "M": // Modified
+      case "A": // Added
+      case "D": // Deleted
+      case "C": // Copied
+        targetFiles.add(file);
+        break;
+      case "R": // Renamed
+        const [oldName, newName] = line.slice(1, -1).split(" -> ").map(s => s.trim());
+        targetFiles.add(oldName!);
+        targetFiles.add(newName!);
+        break;
+      default:
+        return type satisfies never;
+    }
+  }
+
+  if (targetFiles.size === 0) {
+    console.error("No target files found in the current division.");
+    exit(1);
+  }
+
+  return targetFiles.keys().toArray();
+}
+
 const description = execSync("jj log -r @- -T description").toString().trim();
 const isEmpty = ["@\n│\n~", "○\n│\n~"].includes(description);
 
@@ -13,7 +47,7 @@ if (!isEmpty) {
 }
 
 const diff = execSync("jj show @-").toString().trim();
-const targetFiles = execSync("jj show --no-patch -r @- -T 'diff.files().map(|c| c.path())'").toString().trim().split(" ");
+const targetFiles = getTargetFiles();
 const prompt = createPrompt(diff, targetFiles);
 
 const result = spawnSync("claude", ["-p"], {
@@ -76,13 +110,13 @@ for (const revision of revisions) {
 
 for (const revision of revisions) {
   execSync(
-    `jj split -r @- -m "${revision.commit_message}" ${revision.files.join(" ")}`,
+    `jj split ${revision.files.map(e => `root-file:${e}`).join(" ")} -r @- -m "${revision.commit_message}"`,
     {
-      stdio: "ignore",
+      // stdio: "ignore",
     },
   );
 }
 
-execSync("jj abandon @- --restore-descendants", {
-  stdio: "ignore",
-});
+// execSync("jj abandon @- --restore-descendants", {
+//   stdio: "ignore",
+// });
