@@ -44,7 +44,7 @@ type Output = {
   files: Record<string, number>;
 };
 
-const targetString = match[1].trim();
+const targetString = match[1]!.trim();
 const typed_output: Output = JSON.parse(targetString);
 
 const revisions: Revision[] = [];

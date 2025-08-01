@@ -9,7 +9,6 @@ function fetchCommitMessageStyle(): string {
   // 目的のファイルへの絶対パスを生成
   const commitMessageStylePath = join(
     __dirname,
-    "docs",
     "commit_message_style.md",
   );
   const commitMessageStyle = readFileSync(commitMessageStylePath, "utf8");
