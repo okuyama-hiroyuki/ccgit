@@ -30,9 +30,9 @@ abadonRevision(targetChangeId);
 
 let message = "";
 for (const revision of revisions) {
-  message += `${revision.commit_message}\n`;
+  message += `${revision.commit_message}<br>`;
   for (const file of revision.files) {
-    message += `- ${file}\n`;
+    message += `- ${file}<br>`;
   }
 }
 
