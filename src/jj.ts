@@ -1,6 +1,7 @@
 import { execSync } from "child_process";
 import type { Revision } from "./llm.js";
 import { warn } from "console";
+import { exit } from "process";
 
 export function getDescription(changeId: string): string {
   const output = execSync(`jj show --no-patch -r ${changeId} -T description`);
@@ -76,9 +77,9 @@ export function splitRevisions(
 
   for (const revision of revisions) {
     execSync(
-      `jj split ${revision.files.map(file => `root-file:${file}`).join(" ")} - r ${changeId} -m "${revision.commit_message}"`,
+      `jj split ${revision.files.map(file => `root-file:${file}`).join(" ")} -r ${changeId} -m "${revision.commit_message}"`,
       {
-        // stdio: "ignore",
+        stdio: "ignore",
       },
     );
   }
@@ -91,7 +92,8 @@ export function abadanRevision(changeId: string) {
     for (const file of remainingFiles) {
       message += `- ${file}\n`;
     }
-    throw new Error(message);
+    console.error(message);
+    exit(1);
   }
 
   execSync(`jj abandon ${changeId}`, {
