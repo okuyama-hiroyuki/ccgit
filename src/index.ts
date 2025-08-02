@@ -10,6 +10,10 @@ const getTargetFiles = (): string[] => {
 
   const targetFiles: Set<string> = new Set();
   for (const line of lines) {
+    if (!line || line.trim() === "") {
+      continue;
+    }
+
     const type = line[0] as "M" | "A" | "D" | "R" | "C";
     const file = line.slice(2).trim();
 
