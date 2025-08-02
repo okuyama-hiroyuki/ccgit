@@ -2,7 +2,7 @@
 
 import { createPrompt, generateSplitedRevisions } from "./llm.js";
 import { abandonRevision, getDescription, getDiff, getPreviousChangeId, getTargetFiles, splitRevisions } from "./jj.js";
-import { execFileSync } from "node:child_process";
+import { execSync } from "node:child_process";
 import { exit } from "node:process";
 
 const targetChangeId = getPreviousChangeId();
@@ -39,4 +39,4 @@ for (const revision of revisions) {
   }
 }
 
-execFileSync(`zenity --notification --text="${message}"`);
+execSync(`zenity --notification --text="${message}"`);
