@@ -21,7 +21,7 @@ export const getTargetFiles = (): string[] => {
         targetFiles.add(file);
         break;
       case "R": // Renamed
-        const [oldName, newName] = line.slice(1, -1).split(" -> ").map(s => s.trim());
+        const [oldName, newName] = line.slice(1, -1).split(" => ").map(s => s.trim());
         targetFiles.add(oldName!);
         targetFiles.add(newName!);
         break;
