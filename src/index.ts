@@ -2,7 +2,7 @@
 
 import { createPrompt, generateSplitedRevisions } from "./llm.js";
 import { abadonRevision, getDescription, getDiff, getPreviousChangeId, getTargetFiles, splitRevisions } from "./jj.js";
-import { execSync } from "node:child_process";
+import { execFileSync, execSync } from "node:child_process";
 
 const targetChangeId = getPreviousChangeId();
 
@@ -36,4 +36,4 @@ for (const revision of revisions) {
   }
 }
 
-execSync(`notify-send "ccgit" "${message}"`)
+execFileSync(`notify-send "ccgit" "${message}"`)
