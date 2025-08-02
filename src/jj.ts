@@ -66,14 +66,6 @@ export function splitRevisions(
   changeId: string,
   revisions: Revision[],
 ) {
-
-  for (const revision of revisions) {
-    console.log(`${revision.commit_message}`);
-    for (const file of revision.files) {
-      console.log(`- ${file}`);
-    }
-  }
-
   for (const revision of revisions) {
     execSync(
       `jj split ${revision.files.map(file => `root-file:${file}`).join(" ")} -r ${changeId} --insert-before ${changeId} -m "${revision.commit_message}"`,
