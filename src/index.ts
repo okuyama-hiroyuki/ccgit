@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { createPrompt, generateSplitedRevisions } from "./llm.js";
-import { abadanRevision, getDescription, getDiff, getPreviousChangeId, getTargetFiles, splitRevisions } from "./jj.js";
+import { abadonRevision, getDescription, getDiff, getPreviousChangeId, getTargetFiles, splitRevisions } from "./jj.js";
 
 const targetChangeId = getPreviousChangeId();
 
@@ -25,4 +25,4 @@ const revisions = generateSplitedRevisions(prompt);
 
 splitRevisions(targetChangeId, revisions);
 
-abadanRevision(targetChangeId);
+abadonRevision(targetChangeId);
