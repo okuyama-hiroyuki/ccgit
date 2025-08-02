@@ -36,4 +36,5 @@ for (const revision of revisions) {
   }
 }
 
-execFileSync(`notify-send "ccgit" "${message}"`)
+// execFileSync(`notify-send "ccgit" "${message}"`)
+execFileSync("notify-send", ["ccgit", message]);
