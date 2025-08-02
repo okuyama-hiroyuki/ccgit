@@ -76,7 +76,7 @@ export function splitRevisions(
   }
 }
 
-export function abadonRevision(changeId: string) {
+export function abandonRevision(changeId: string) {
   const remainingFiles = getTargetFiles(changeId);
   if (remainingFiles.length > 0) {
     let message = "Some files were not included in any revision:\n";
