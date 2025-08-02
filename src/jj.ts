@@ -1,9 +1,36 @@
 import { execSync } from "child_process";
-import { warn } from "console";
 import type { Revision } from "./llm.js";
+import { warn } from "console";
 
-export const getTargetFiles = (): string[] => {
-  const sumamry = execSync("jj show --no-patch -r @- -T 'diff.summary()'");
+export function getDescription(changeId: string): string {
+  const output = execSync(`jj show --no-patch -r ${changeId} -T description`);
+  const description = output.toString().trim();
+  if (description) {
+    throw new Error(`Description found for change ID: ${changeId}`);
+  }
+  return description;
+}
+
+export function getDiff(changeId: string): string {
+  const output = execSync(`jj diff -r ${changeId}`);
+  const diff = output.toString().trim();
+  if (!diff) {
+    throw new Error(`No diff found for change ID: ${changeId}`);
+  }
+  return diff;
+}
+
+export function getPreviousChangeId(): string {
+  const output = execSync("jj show --no-patch -r @- -T change_id");
+  const changeId = output.toString().trim();
+  if (!changeId) {
+    throw new Error("No previous change ID found.");
+  }
+  return changeId;
+}
+
+export const getTargetFiles = (changeId: string): string[] => {
+  const sumamry = execSync(`jj show --no-patch -r ${changeId} -T 'diff.summary()'`);
   const lines = sumamry.toString().trim().split("\n");
 
   const targetFiles: Set<string> = new Set();
@@ -36,6 +63,7 @@ export const getTargetFiles = (): string[] => {
 }
 
 export function splitRevisions(
+  changeId: string,
   revisions: Revision[],
 ) {
 
@@ -48,16 +76,16 @@ export function splitRevisions(
 
   for (const revision of revisions) {
     execSync(
-      `jj split ${revision.files.join(" ")} -r @- -m "${revision.commit_message}"`,
+      `jj split ${revision.files.map(file => `root-file:${file}`).join(" ")} - r ${changeId} -m "${revision.commit_message}"`,
       {
-        stdio: "ignore",
+        // stdio: "ignore",
       },
     );
   }
 }
 
-export function abadanRevision() {
-  const remainingFiles = getTargetFiles();
+export function abadanRevision(changeId: string) {
+  const remainingFiles = getTargetFiles(changeId);
   if (remainingFiles.length > 0) {
     let message = "Some files were not included in any revision:\n";
     for (const file of remainingFiles) {
@@ -66,7 +94,7 @@ export function abadanRevision() {
     throw new Error(message);
   }
 
-  execSync("jj abandon @-", {
+  execSync(`jj abandon ${changeId}`, {
     stdio: "ignore",
   });
 }
