@@ -4,11 +4,12 @@ import { createPrompt, generateSplitedRevisions } from "./llm.js";
 import { abandonRevision, getDescription, getDiff, getPreviousChangeId, getTargetFiles, splitRevisions } from "./jj.js";
 import { spawn, spawnSync } from "node:child_process";
 import { exit } from "node:process";
+import { fileURLToPath } from 'url';
 
-
-// 子プロセス（ワーカー）として実行されているかを確認
 if (!process.env.IS_WORKER) {
-  const args = [__filename]; // 自分自身のファイルパス
+  const __filename = fileURLToPath(import.meta.url);
+
+  const args = [__filename];
 
   const child = spawn(process.execPath, args, {
     detached: true,
