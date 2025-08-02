@@ -113,7 +113,7 @@ for (const revision of revisions) {
 
 for (const revision of revisions) {
   execSync(
-    `jj split ${revision.files.map(e => `root-file:${e}`).join(" ")} -r @- -m "${revision.commit_message}"`,
+    `jj split ${revision.files.join(" ")} -r @- -m "${revision.commit_message}"`,
     {
       stdio: "ignore",
     },
