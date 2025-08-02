@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 
 import { createPrompt, generateSplitedRevisions } from "./llm.js";
-import { abadonRevision, getDescription, getDiff, getPreviousChangeId, getTargetFiles, splitRevisions } from "./jj.js";
-import { execFileSync, execSync } from "node:child_process";
+import { abandonRevision, getDescription, getDiff, getPreviousChangeId, getTargetFiles, splitRevisions } from "./jj.js";
+import { execSync } from "node:child_process";
+import { exit } from "node:process";
 
 const targetChangeId = getPreviousChangeId();
 
@@ -12,13 +13,15 @@ const description = getDescription(targetChangeId);
 const isEmpty = !description;
 
 if (!isEmpty) {
-  throw new Error("The recent division's description is not empty. Please clear it before running this script.");
+  console.error("The recent division's description is not empty. Please clear it before running this script.");
+  exit(1);
 }
 
 const diff = getDiff(targetChangeId);
 const targetFiles = getTargetFiles(targetChangeId);
 if (targetFiles.length === 0) {
-  throw new Error("No target files found in the current division. Please ensure you have specified the correct files in your configuration.");
+  console.error("No target files found in the current division. Please ensure you have specified the correct files in your configuration.");
+  exit(1);
 }
 
 const prompt = createPrompt(diff, targetFiles);
@@ -26,7 +29,7 @@ const revisions = generateSplitedRevisions(prompt);
 
 splitRevisions(targetChangeId, revisions);
 
-abadonRevision(targetChangeId);
+abandonRevision(targetChangeId);
 
 let message = "";
 for (const revision of revisions) {
@@ -37,5 +40,3 @@ for (const revision of revisions) {
 }
 
 execSync(`zenity --notification --text="${message}"`);
-// execFileSync(`notify-send "ccgit" "${message}"`)
-// execFileSync("notify-send", ["ccgit", message]);
