@@ -26,6 +26,7 @@ const getTargetFiles = (): string[] => {
         targetFiles.add(newName!);
         break;
       default:
+        console.error(`Unknown file type: ${type}`);
         return type satisfies never;
     }
   }
