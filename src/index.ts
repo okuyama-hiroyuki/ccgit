@@ -5,7 +5,7 @@ import { abadonRevision, getDescription, getDiff, getPreviousChangeId, getTarget
 
 const targetChangeId = getPreviousChangeId();
 
-console.log(`Lock target change ID: ${targetChangeId}`);
+// console.log(`Lock target change ID: ${targetChangeId}`);
 
 const description = getDescription(targetChangeId);
 const isEmpty = !description;
