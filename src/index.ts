@@ -3,7 +3,6 @@
 import { execSync, spawnSync } from "node:child_process";
 import { exit } from "node:process";
 import { createPrompt } from "./prompt.js";
-import { get } from "node:http";
 
 const getTargetFiles = (): string[] => {
   const sumamry = execSync("jj show --no-patch -r @- -T 'diff.summary()'");
@@ -31,8 +30,7 @@ const getTargetFiles = (): string[] => {
     }
   }
 
-
-  return targetFiles.keys().toArray();
+  return [...targetFiles];
 }
 
 const description = execSync("jj log -r @- -T description").toString().trim();
