@@ -5,8 +5,8 @@ import { exit } from "node:process";
 import { createPrompt, generateSplitedRevisions } from "./llm.js";
 import { abadanRevision, getTargetFiles, splitRevisions } from "./jj.js";
 
-const description = execSync("jj log -r @- -T description").toString().trim();
-const isEmpty = ["@\n│\n~", "○\n│\n~"].includes(description);
+const description = execSync("jj show -r @- --no-patch -T description").toString().trim();
+const isEmpty = !description;
 
 if (!isEmpty) {
   console.log("recent division's description is not empty");
