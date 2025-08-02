@@ -1,6 +1,5 @@
 import { execSync } from "child_process";
 import type { Revision } from "./llm.js";
-import { warn } from "console";
 import { exit } from "process";
 
 export function getDescription(changeId: string): string {
