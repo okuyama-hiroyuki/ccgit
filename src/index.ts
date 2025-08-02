@@ -48,6 +48,7 @@ if (!isEmpty) {
 
 const diff = execSync("jj show @-").toString().trim();
 const targetFiles = getTargetFiles();
+console.log(`Target files: ${targetFiles.join(", ")}`);
 const prompt = createPrompt(diff, targetFiles);
 
 const result = spawnSync("claude", ["-p"], {
@@ -112,7 +113,7 @@ for (const revision of revisions) {
   execSync(
     `jj split ${revision.files.map(e => `root-file:${e}`).join(" ")} -r @- -m "${revision.commit_message}"`,
     {
-      // stdio: "ignore",
+      stdio: "ignore",
     },
   );
 }
