@@ -27,6 +27,7 @@ const getTargetFiles = (): string[] => {
         break;
       default:
         console.error(`Unknown file type: ${type}`);
+        console.error(`Line: ${line}`);
         return type satisfies never;
     }
   }
