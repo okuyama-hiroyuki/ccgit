@@ -4,6 +4,9 @@ import { createPrompt, generateSplitedRevisions } from "./llm.js";
 import { abadanRevision, getDescription, getDiff, getPreviousChangeId, getTargetFiles, splitRevisions } from "./jj.js";
 
 const targetChangeId = getPreviousChangeId();
+
+console.log(`Lock target change ID: ${targetChangeId}`);
+
 const description = getDescription(targetChangeId);
 const isEmpty = !description;
 
