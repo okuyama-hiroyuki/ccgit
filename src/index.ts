@@ -3,6 +3,7 @@
 import { execSync, spawnSync } from "node:child_process";
 import { exit } from "node:process";
 import { createPrompt } from "./prompt.js";
+import { get } from "node:http";
 
 const getTargetFiles = (): string[] => {
   const sumamry = execSync("jj show --no-patch -r @- -T 'diff.summary()'");
@@ -30,10 +31,6 @@ const getTargetFiles = (): string[] => {
     }
   }
 
-  if (targetFiles.size === 0) {
-    console.error("No target files found in the current division.");
-    exit(1);
-  }
 
   return targetFiles.keys().toArray();
 }
@@ -48,7 +45,10 @@ if (!isEmpty) {
 
 const diff = execSync("jj show @-").toString().trim();
 const targetFiles = getTargetFiles();
-console.log(`Target files: ${targetFiles.join(", ")}`);
+if (targetFiles.length === 0) {
+  console.error("No target files found in the current division.");
+  exit(1);
+}
 const prompt = createPrompt(diff, targetFiles);
 
 const result = spawnSync("claude", ["-p"], {
@@ -118,6 +118,15 @@ for (const revision of revisions) {
   );
 }
 
-// execSync("jj abandon @- --restore-descendants", {
-//   stdio: "ignore",
-// });
+const remainingFiles = getTargetFiles();
+if (remainingFiles.length > 0) {
+  console.error("Some files were not included in any revision:");
+  for (const file of remainingFiles) {
+    console.error(`- ${file}`);
+  }
+  exit(1);
+}
+
+execSync("jj abandon @-", {
+  stdio: "ignore",
+});
