@@ -39,6 +39,4 @@ for (const revision of revisions) {
   }
 }
 
-// execSync(`zenity --notification --text="${message}"`);
-
 spawn("zenity", ["--notification", "--text", message])
