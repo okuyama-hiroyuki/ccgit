@@ -1,4 +1,6 @@
 import { execSync } from "child_process";
+import { warn } from "console";
+import type { Revision } from "./llm.js";
 
 export const getTargetFiles = (): string[] => {
   const sumamry = execSync("jj show --no-patch -r @- -T 'diff.summary()'");
@@ -31,4 +33,40 @@ export const getTargetFiles = (): string[] => {
   }
 
   return [...targetFiles];
+}
+
+export function splitRevisions(
+  revisions: Revision[],
+) {
+
+  for (const revision of revisions) {
+    console.log(`${revision.commit_message}`);
+    for (const file of revision.files) {
+      console.log(`- ${file}`);
+    }
+  }
+
+  for (const revision of revisions) {
+    execSync(
+      `jj split ${revision.files.join(" ")} -r @- -m "${revision.commit_message}"`,
+      {
+        stdio: "ignore",
+      },
+    );
+  }
+}
+
+export function abadanRevision() {
+  const remainingFiles = getTargetFiles();
+  if (remainingFiles.length > 0) {
+    let message = "Some files were not included in any revision:\n";
+    for (const file of remainingFiles) {
+      message += `- ${file}\n`;
+    }
+    throw new Error(message);
+  }
+
+  execSync("jj abandon @-", {
+    stdio: "ignore",
+  });
 }

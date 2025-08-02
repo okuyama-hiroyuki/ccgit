@@ -58,7 +58,7 @@ think
   return prompt;
 }
 
-type Revision = {
+export type Revision = {
   commit_message: string;
   files: string[];
 };
