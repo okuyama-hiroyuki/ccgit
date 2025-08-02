@@ -19,6 +19,7 @@ if (targetFiles.length === 0) {
   console.error("No target files found in the current division.");
   exit(1);
 }
+
 const prompt = createPrompt(diff, targetFiles);
 const revisions = generateSplitedRevisions(prompt);
 
