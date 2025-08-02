@@ -76,7 +76,7 @@ export function splitRevisions(
 
   for (const revision of revisions) {
     execSync(
-      `jj split ${revision.files.map(file => `root-file:${file}`).join(" ")} -r ${changeId} -m "${revision.commit_message}"`,
+      `jj split ${revision.files.map(file => `root-file:${file}`).join(" ")} -r ${changeId} --insert-before ${changeId} -m "${revision.commit_message}"`,
       {
         stdio: "ignore",
       },
