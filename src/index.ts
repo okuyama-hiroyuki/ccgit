@@ -2,8 +2,23 @@
 
 import { createPrompt, generateSplitedRevisions } from "./llm.js";
 import { abandonRevision, getDescription, getDiff, getPreviousChangeId, getTargetFiles, splitRevisions } from "./jj.js";
-import { spawnSync } from "node:child_process";
+import { spawn, spawnSync } from "node:child_process";
 import { exit } from "node:process";
+
+
+// 子プロセス（ワーカー）として実行されているかを確認
+if (!process.env.IS_WORKER) {
+  const args = [__filename]; // 自分自身のファイルパス
+
+  const child = spawn(process.execPath, args, {
+    detached: true,
+    env: { ...process.env, IS_WORKER: 'true' },
+  });
+
+  child.unref();
+
+  exit(0);
+}
 
 const targetChangeId = getPreviousChangeId();
 
