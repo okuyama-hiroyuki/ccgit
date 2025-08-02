@@ -9,15 +9,13 @@ const description = execSync("jj show -r @- --no-patch -T description").toString
 const isEmpty = !description;
 
 if (!isEmpty) {
-  console.log("recent division's description is not empty");
-  exit(0);
+  throw new Error("The recent division's description is not empty. Please clear it before running this script.");
 }
 
 const diff = execSync("jj show @-").toString().trim();
 const targetFiles = getTargetFiles();
 if (targetFiles.length === 0) {
-  console.error("No target files found in the current division.");
-  exit(1);
+  throw new Error("No target files found in the current division. Please ensure you have specified the correct files in your configuration.");
 }
 
 const prompt = createPrompt(diff, targetFiles);
