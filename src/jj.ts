@@ -46,9 +46,9 @@ export const getTargetFiles = (changeId: string): string[] => {
       case "M": // Modified
       case "A": // Added
       case "D": // Deleted
-      case "C": // Copied
         targetFiles.add(file);
         break;
+      case "C": // Copied
       case "R": // Renamed
         const [oldName, newName] = line.slice(1, -1).split(" => ").map(s => s.trim());
         targetFiles.add(oldName!);
