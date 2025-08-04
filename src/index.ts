@@ -18,7 +18,10 @@ if (process.argv.includes('-v') || process.argv.includes('--version')) {
   exit(0);
 }
 
-if (!process.env.IS_WORKER) {
+const isDebugMode = process.argv.includes('--debug') || process.argv.includes('-d');
+
+// if (!process.env.IS_WORKER) {
+if (!isDebugMode && !process.env.IS_WORKER) {
   const __filename = fileURLToPath(import.meta.url);
 
   const args = [__filename];
@@ -54,6 +57,7 @@ if (targetFiles.length === 0) {
 
 const prompt = createPrompt(diff, targetFiles);
 const revisions = generateSplitedRevisions(prompt);
+console.log(revisions);
 
 splitRevisions(targetChangeId, revisions);
 
