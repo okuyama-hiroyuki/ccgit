@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { spawnSync } from "node:child_process";
+import { exit } from "node:process";
 
 function fetchCommitMessageStyle(): string {
   const __filename = fileURLToPath(import.meta.url);
