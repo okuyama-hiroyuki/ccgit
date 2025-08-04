@@ -103,8 +103,9 @@ export function generateSplitedRevisions(
       .map(([key]) => key);
 
     if (files.length === 0) {
-      console.error(`No files found for revision ${index + 1}`);
-      exit(1);
+      continue;
+      // console.error(`No files found for revision ${index + 1}`);
+      // exit(1);
     }
 
     revisions.push({
