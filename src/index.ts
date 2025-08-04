@@ -5,6 +5,18 @@ import { abandonRevision, getDescription, getDiff, getPreviousChangeId, getTarge
 import { spawn, spawnSync } from "node:child_process";
 import { exit } from "node:process";
 import { fileURLToPath } from 'url';
+import { readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+
+// Check for version flag
+if (process.argv.includes('-v') || process.argv.includes('--version')) {
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = dirname(__filename);
+  const packagePath = join(__dirname, '..', 'package.json');
+  const packageJson = JSON.parse(readFileSync(packagePath, 'utf8'));
+  console.log(`ccgit version ${packageJson.version}`);
+  exit(0);
+}
 
 if (!process.env.IS_WORKER) {
   const __filename = fileURLToPath(import.meta.url);
