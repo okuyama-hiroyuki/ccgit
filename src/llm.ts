@@ -101,10 +101,10 @@ export function generateSplitedRevisions(
       .filter(([, value]) => value === index)
       .map(([key]) => key);
 
-    // if (files.length === 0) {
-    //   console.error(`No files found for revision ${index + 1}`);
-    //   exit(1);
-    // }
+    if (files.length === 0) {
+      console.error(`No files found for revision ${index + 1}`);
+      exit(1);
+    }
 
     revisions.push({
       commit_message: description,
