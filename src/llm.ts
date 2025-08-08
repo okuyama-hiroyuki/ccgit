@@ -1,21 +1,6 @@
 import { spawnSync } from "node:child_process";
-import { readFileSync } from "node:fs";
-import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
-
-function fetchCommitMessageStyle(): string {
-	const __filename = fileURLToPath(import.meta.url);
-	const __dirname = dirname(__filename);
-
-	// 目的のファイルへの絶対パスを生成
-	const commitMessageStylePath = join(__dirname, "commit_message_style.md");
-	const commitMessageStyle = readFileSync(commitMessageStylePath, "utf8");
-
-	return commitMessageStyle;
-}
 
 export function createPrompt(diff: string, files: string[]): string {
-	const commitMessageStyle = fetchCommitMessageStyle();
 	const prompt = `
 [what to do]
 あなたはコードのコミットメッセージを生成するAIです。
@@ -24,8 +9,20 @@ export function createPrompt(diff: string, files: string[]): string {
 [diff]
 ${diff}
 
-[commit message style]
-${commitMessageStyle}
+[revision description format]
+<change type>: <summary in one line>
+
+[revison change type]
++ feat: 新機能の追加
++ fix: バグ修正
++ docs: ドキュメントの変更
++ style: フォーマットの変更（コードの動作に影響しない）
++ refactor: リファクタリング（機能追加やバグ修正ではない）
++ perf: パフォーマンス改善
++ test: テストの追加や修正
++ build: ビルドシステムや外部依存関係の変更
++ ci: CI設定の変更
++ chore: その他の変更（ビルドやドキュメント生成など）
 
 [output format]
 desctiption about the changes in the last revision.
