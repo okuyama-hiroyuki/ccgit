@@ -1,7 +1,7 @@
 {
 	"name": "ccjj",
 	"version": "0.0.1",
-	"description": "",
+	"description": "generate jj revision's description using Claude Code",
 	"main": "dist/index.js",
 	"scripts": {
 		"build": "tsc",
