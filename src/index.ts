@@ -81,9 +81,16 @@ const main = defineCommand({
 			exit(1);
 		}
 
+		if (args.debug) {
+			console.log("Target Change ID:", targetChangeId);
+			console.log("Target Files:", targetFiles);
+		}
+
 		const prompt = createPrompt(diff, targetFiles);
 		const revisions = generateSplitedRevisions(prompt);
-		console.log(revisions);
+		if (args.debug) {
+			console.log(revisions);
+		}
 
 		splitRevisions(targetChangeId, revisions);
 
