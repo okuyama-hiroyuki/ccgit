@@ -1,7 +1,7 @@
 import { spawnSync } from "node:child_process";
 
 export function createPrompt(diff: string, files: string[]): string {
-	const prompt = `
+  const prompt = `
 [what to do]
 あなたはコードのコミットメッセージを生成するAIです。
 あなたは、与えられたコードの変更内容を要約し、適切なコミットメッセージを生成してください。
@@ -46,60 +46,65 @@ desctiption about the changes in the last revision.
 think
 `;
 
-	return prompt;
+  return prompt;
 }
 
 export type Revision = {
-	commit_message: string;
-	files: string[];
+  commit_message: string;
+  files: string[];
 };
 
 type Output = {
-	revisions_descriptions: string[];
-	files: Record<string, number>;
+  revisions_descriptions: string[];
+  files: Record<string, number>;
 };
 
 export function generateSplitedRevisions(prompt: string) {
-	const result = spawnSync("claude", ["-p"], {
-		input: prompt,
-	});
+  // const result = spawnSync("claude", ["-p"], {
+  // 	input: prompt,
+  // });
+  const result = spawnSync("npx", ["claude", "-p"], {
+    input: prompt,
+    encoding: "utf-8",
+    shell: true,
+  });
 
-	if (result.error) {
-		throw result.error;
-	}
-	const rawString = result.stdout.toString().trim();
+  if (result.error) {
+    throw result.error;
+  }
+  const rawString = result.stdout.toString().trim();
 
-	const match = rawString.match(/```json([\s\S]*?)```/);
-	if (!match) {
-		console.error("No JSON block found in the response.");
-		console.log("prompt:", prompt);
-		console.log("rawString:", rawString);
-		throw new Error("No JSON block found in the response.");
-	}
+  const match = rawString.match(/```json([\s\S]*?)```/);
+  if (!match) {
+    console.error("No JSON block found in the response.");
+    console.log("prompt:", prompt);
+    console.log("rawString:", rawString);
+    throw new Error("No JSON block found in the response.");
+  }
 
-	const targetString = match[1]!.trim();
-	const typed_output: Output = JSON.parse(targetString);
+  const targetString = match[1]!.trim();
+  const typed_output: Output = JSON.parse(targetString);
 
-	const revisions: Revision[] = [];
-	for (const [
-		index,
-		description,
-	] of typed_output.revisions_descriptions.entries()) {
-		const files = Object.entries(typed_output.files)
-			.filter(([, value]) => value === index)
-			.map(([key]) => key);
+  const revisions: Revision[] = [];
+  for (const [
+    index,
+    description,
+  ] of typed_output.revisions_descriptions.entries()) {
+    const files = Object.entries(typed_output.files)
+      .filter(([, value]) => value === index)
+      .map(([key]) => key);
 
-		if (files.length === 0) {
-			continue;
-			// console.error(`No files found for revision ${index + 1}`);
-			// exit(1);
-		}
+    if (files.length === 0) {
+      continue;
+      // console.error(`No files found for revision ${index + 1}`);
+      // exit(1);
+    }
 
-		revisions.push({
-			commit_message: description,
-			files,
-		});
-	}
+    revisions.push({
+      commit_message: description,
+      files,
+    });
+  }
 
-	return revisions;
+  return revisions;
 }
