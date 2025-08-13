@@ -1,111 +1,83 @@
 #!/usr/bin/env node
 
-import { spawn, spawnSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { exit } from "node:process";
 import { fileURLToPath } from "node:url";
 import { defineCommand, runMain } from "citty";
 import {
-	abandonRevision,
-	getDescription,
-	getDiff,
-	getPreviousChangeId,
-	getTargetFiles,
-	splitRevisions,
+  abandonRevision,
+  getDescription,
+  getDiff,
+  getPreviousChangeId,
+  getTargetFiles,
+  splitRevisions,
 } from "./jj.js";
 import { createPrompt, generateSplitedRevisions } from "./llm.js";
 
 const main = defineCommand({
-	meta: {
-		name: "ccjj",
-		description: "generate jj revision's description using Claude Code",
-	},
-	args: {
-		version: {
-			type: "boolean",
-			description: "Show version information",
-			alias: "v",
-			default: false,
-		},
-		debug: {
-			type: "boolean",
-			description: "Enable debug mode",
-			alias: "d",
-			default: false,
-		},
-	},
-	run({ args }) {
-		if (args.version) {
-			const __filename = fileURLToPath(import.meta.url);
-			const __dirname = dirname(__filename);
-			const packagePath = join(__dirname, "..", "package.json");
-			const packageJson = JSON.parse(readFileSync(packagePath, "utf8"));
-			console.log(`ccgit version ${packageJson.version}`);
-			exit(0);
-		}
+  meta: {
+    name: "ccjj",
+    description: "generate jj revision's description using Claude Code",
+  },
+  args: {
+    version: {
+      type: "boolean",
+      description: "Show version information",
+      alias: "v",
+      default: false,
+    },
+  },
+  run({ args }) {
+    if (args.version) {
+      const __filename = fileURLToPath(import.meta.url);
+      const __dirname = dirname(__filename);
+      const packagePath = join(__dirname, "..", "package.json");
+      const packageJson = JSON.parse(readFileSync(packagePath, "utf8"));
+      console.log(`ccgit version ${packageJson.version}`);
+      exit(0);
+    }
 
-		if (!args.debug && !process.env.IS_WORKER) {
-			const __filename = fileURLToPath(import.meta.url);
+    const targetChangeId = getPreviousChangeId();
 
-			const args = [__filename];
+    const description = getDescription(targetChangeId);
+    const isEmpty = !description;
 
-			const child = spawn(process.execPath, args, {
-				detached: true,
-				env: { ...process.env, IS_WORKER: "true" },
-			});
+    if (!isEmpty) {
+      console.error(
+        "The recent division's description is not empty. Please clear it before running this script.",
+      );
+      exit(1);
+    }
 
-			child.unref();
+    const diff = getDiff(targetChangeId);
+    const targetFiles = getTargetFiles(targetChangeId);
+    if (targetFiles.length === 0) {
+      console.error(
+        "No target files found in the current division. Please ensure you have specified the correct files in your configuration.",
+      );
+      exit(1);
+    }
 
-			exit(0);
-		}
+    console.log("Target Files:", targetFiles);
 
-		const targetChangeId = getPreviousChangeId();
+    const prompt = createPrompt(diff, targetFiles);
+    const revisions = generateSplitedRevisions(prompt);
 
-		const description = getDescription(targetChangeId);
-		const isEmpty = !description;
+    splitRevisions(targetChangeId, revisions);
 
-		if (!isEmpty) {
-			console.error(
-				"The recent division's description is not empty. Please clear it before running this script.",
-			);
-			exit(1);
-		}
+    abandonRevision(targetChangeId);
 
-		const diff = getDiff(targetChangeId);
-		const targetFiles = getTargetFiles(targetChangeId);
-		if (targetFiles.length === 0) {
-			console.error(
-				"No target files found in the current division. Please ensure you have specified the correct files in your configuration.",
-			);
-			exit(1);
-		}
+    let message = "";
+    for (const revision of revisions) {
+      message += `${revision.commit_message}\n`;
+      for (const file of revision.files) {
+        message += `- ${file}\n`;
+      }
+    }
 
-		if (args.debug) {
-			console.log("Target Change ID:", targetChangeId);
-			console.log("Target Files:", targetFiles);
-		}
-
-		const prompt = createPrompt(diff, targetFiles);
-		const revisions = generateSplitedRevisions(prompt);
-		if (args.debug) {
-			console.log(revisions);
-		}
-
-		splitRevisions(targetChangeId, revisions);
-
-		abandonRevision(targetChangeId);
-
-		let message = "";
-		for (const revision of revisions) {
-			message += `${revision.commit_message}\n`;
-			for (const file of revision.files) {
-				message += `- ${file}\n`;
-			}
-		}
-
-		spawnSync("zenity", ["--notification", "--text", message]);
-	},
+    console.log(message);
+  },
 });
 
 runMain(main);
