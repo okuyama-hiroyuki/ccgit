@@ -1,4 +1,4 @@
-import { execSync, spawnSync } from "node:child_process";
+import { spawnSync } from "node:child_process";
 import { exit } from "node:process";
 import type { Revision } from "./llm.js";
 
@@ -16,11 +16,9 @@ export function getDescription(changeId: string): string {
 }
 
 export function getDiff(changeId: string): string {
-  const result = spawnSync(
-    "jj",
-    ["diff", "-r", changeId],
-    { encoding: "utf-8" },
-  );
+  const result = spawnSync("jj", ["diff", "-r", changeId], {
+    encoding: "utf-8",
+  });
   const diff = result.stdout.toString().trim();
   if (!diff) {
     throw new Error(`No diff found for change ID: ${changeId}`);
@@ -28,10 +26,10 @@ export function getDiff(changeId: string): string {
   return diff;
 }
 
-export function getPreviousChangeId(): string {
+export function getPreviousChangeId(target: string): string {
   const result = spawnSync(
     "jj",
-    ["show", "--no-patch", "-r", "@-", "-T", "change_id"],
+    ["show", "--no-patch", "-r", target, "-T", "change_id"],
     { encoding: "utf-8" },
   );
   const changeId = result.stdout.toString().trim();
@@ -65,7 +63,8 @@ export const getTargetFiles = (changeId: string): string[] => {
         targetFiles.add(file);
         break;
       case "C": // Copied
-      case "R": // Renamed
+      case "R": {
+        // Renamed
         const [oldName, newName] = line
           .slice(1, -1)
           .split(" => ")
@@ -73,6 +72,7 @@ export const getTargetFiles = (changeId: string): string[] => {
         targetFiles.add(oldName!);
         targetFiles.add(newName!);
         break;
+      }
       default:
         return type satisfies never;
     }

@@ -27,6 +27,13 @@ const main = defineCommand({
       alias: "v",
       default: false,
     },
+    revision: {
+      type: "string",
+      description: "The revision to split",
+      alias: "r",
+      default: "@-",
+      required: false,
+    },
   },
   run({ args }) {
     if (args.version) {
@@ -38,7 +45,7 @@ const main = defineCommand({
       exit(0);
     }
 
-    const targetChangeId = getPreviousChangeId();
+    const targetChangeId = getPreviousChangeId(args.revision);
 
     const description = getDescription(targetChangeId);
     const isEmpty = !description;
